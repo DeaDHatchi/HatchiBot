@@ -19,10 +19,6 @@ class HatchiBot(discord.Client):
         return "Version 1.1.20201109"
 
     @property
-    def voice_members(self):
-        return list(filter(lambda member: member.voice and member.voice.channel and not member.voice.afk, self.guild.members))
-
-    @property
     def guild(self):
         for guild in self.guilds:
             if guild.name == "Tea Baggers":
@@ -50,8 +46,11 @@ class HatchiBot(discord.Client):
                 print("[+] !querymembers Message Received")
                 await self.query_members()
 
+    async def voice_members(self):
+        return list(filter(lambda member: member.voice and member.voice.channel and not member.voice.afk, self.guild.members))
+
     async def raid_time(self):
-        for member in self.voice_members:
+        for member in await self.voice_members():
             if self.check_member_roles(member):
                 await self.move_raider(member)
 
@@ -65,7 +64,7 @@ class HatchiBot(discord.Client):
         await member.move_to(self.raid_channel)
 
     async def query_members(self):
-        for member in self.voice_members:
+        for member in await self.voice_members():
             print(f"[+] Member: {member}")
 
 
