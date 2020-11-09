@@ -5,7 +5,6 @@ import json
 class HatchiBot(discord.Client):
 
     _client_reference = None
-    _main_guild = None
 
     @property
     def client_reference(self):
@@ -16,16 +15,12 @@ class HatchiBot(discord.Client):
         self._client_reference = reference
 
     @property
-    def _version(self):
-        return "Version 1.1.20201108"
+    def __version__(self):
+        return "Version 1.1.20201109"
 
     @property
     def voice_members(self):
-        members = []
-        for member in self._main_guild.members:
-            if member.voice and member.voice.channel and not member.voice.afk:
-                members.append(member)
-        return members
+        return list(filter(lambda member: member.voice and member.voice.channel and not member.voice.afk, self.guild.members))
 
     @property
     def guild(self):
@@ -35,29 +30,24 @@ class HatchiBot(discord.Client):
 
     @property
     def raid_channel(self):
-        for voice_channel in self._main_guild.voice_channels:
+        for voice_channel in self.guild.voice_channels:
             if voice_channel.name == "Mythic Raid":
                 return voice_channel
 
     @property
     def raider_roles(self):
-        raider_roles = []
-        for role in self._main_guild.roles:
-            if role.name == "Mythic Raider" or role.name == "Officer" or role.name == "Assistant GM" or role.name == "GM":
-                raider_roles.append(role)
-        return raider_roles
+        return list(filter(lambda role: role.name == "Mythic Raider" or role.name == "Officer" or role.name == "Assistant GM" or role.name == "GM", self.guild.roles))
 
     async def on_ready(self):
-        self._main_guild = self.guild
-        print(f'[+] HatchiBot Online {self._version}')
+        print(f'[+] HatchiBot Online {self.__version__}')
 
     async def on_message(self, message):
         if message.author != self.client_reference.user:
             if message.content.startswith("!raidtime"):
-                print("[+] Raidtime Message Received")
+                print("[+] !raidtime Message Received")
                 await self.raid_time()
             if message.content.startswith("!querymembers"):
-                print("[+] Raidtime Message Received")
+                print("[+] !querymembers Message Received")
                 await self.query_members()
 
     async def raid_time(self):
