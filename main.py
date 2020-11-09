@@ -56,6 +56,9 @@ class HatchiBot(discord.Client):
             if message.content.startswith("!raidtime"):
                 print("[+] Raidtime Message Received")
                 await self.raid_time()
+            if message.content.startswith("!querymembers"):
+                print("[+] Raidtime Message Received")
+                await self.query_members()
 
     async def raid_time(self):
         for member in self.voice_members:
@@ -70,6 +73,10 @@ class HatchiBot(discord.Client):
     async def move_raider(self, member):
         print(f"[+] Moving Raider: {member}")
         await member.move_to(self.raid_channel)
+
+    async def query_members(self):
+        for member in self.voice_members:
+            print(f"[+] Member: {member}")
 
 
 def load_config():
