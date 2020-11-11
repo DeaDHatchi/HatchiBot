@@ -4,6 +4,8 @@ from discord.ext import commands
 
 bot = commands.Bot(command_prefix="!")
 
+__version__ = "1.2.20201111"
+
 
 @bot.command(name="raidtime", help="Move all Mythic Raiders to the Mythic Raid Channel")
 @commands.has_role("GM")
@@ -14,7 +16,7 @@ async def raidtime(context):
     for member in voice_members:
         if check_member_roles(member, raider_roles):
             await move_raider(member, raid_channel)
-            await asyncio.sleep(.25)
+            await asyncio.sleep(.25)  # Using this to test issues with moving members too quickly
 
 
 @bot.command(name='queryusers', help="Print each voice member for debugging purposes")
@@ -22,6 +24,24 @@ async def queryusers(context):
     voice_members = await get_voice_members(context.guild)
     for member in voice_members:
         print(f"Voice Member: {member}")
+
+
+@bot.command(name='version', help="Print the latest version of HatchiBot")
+async def version(context):
+    await context.send(f"[+] HatchiBot Online - Version: {__version__}")
+
+
+@bot.command(name="github", help="Print the link to HatchiBot's Github")
+async def github(context):
+    await context.send(f"[+] HatchiBot Github Link: https://github.com/DeaDHatchi/HatchiBot")
+
+
+@bot.command(name="development", help="Print the current list of HatchiBot's In-Development Projects")
+async def development(context):
+    await context.send("__**Currently Under Development Features**__\n"
+                       "`Dueling Game: Developed by Hatchi, Gal, Goth`\n"
+                       "`Reaction Based Role Assignment: Assign Roles, Classes based on Reactions`\n"
+                       "`Event Planner: Basic Event Planner based on Reactions`")
 
 
 async def get_raid_channel(guild):
