@@ -29,12 +29,12 @@ async def queryusers(context):
 
 @bot.command(name='version', help="Print the latest version of HatchiBot")
 async def version(context):
-    await context.send(f"[+] HatchiBot Online - Version: {__version__}")
+    await context.send(f"__**HatchiBot Online**__\n`Version: {__version__}`")
 
 
 @bot.command(name="github", help="Print the link to HatchiBot's Github")
 async def github(context):
-    await context.send(f"[+] HatchiBot Github Link: https://github.com/DeaDHatchi/HatchiBot")
+    await context.send(f"`HatchiBot Github Link: https://github.com/DeaDHatchi/HatchiBot`")
 
 
 @bot.command(name="development", help="Print the current list of HatchiBot's In-Development Projects")
