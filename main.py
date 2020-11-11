@@ -8,7 +8,7 @@ __version__ = "1.2.20201111"
 
 
 @bot.command(name="raidtime", help="Move all Mythic Raiders to the Mythic Raid Channel")
-@commands.has_role("GM")
+@commands.has_role("Officer")
 async def raidtime(context):
     raid_channel = await get_raid_channel(context.guild)
     raider_roles = await get_raider_roles(context.guild)
