@@ -1,71 +1,54 @@
-import discord
 import json
+import asyncio
+from discord.ext import commands
+
+bot = commands.Bot(command_prefix="!")
 
 
-class HatchiBot(discord.Client):
+@bot.command(name="raidtime", help="Move all Mythic Raiders to the Mythic Raid Channel")
+@commands.has_role("GM")
+async def raidtime(context):
+    raid_channel = await get_raid_channel(context.guild)
+    raider_roles = await get_raider_roles(context.guild)
+    voice_members = await get_voice_members(context.guild)
+    for member in voice_members:
+        if check_member_roles(member, raider_roles):
+            await move_raider(member, raid_channel)
+            await asyncio.sleep(.25)
 
-    _client_reference = None
 
-    @property
-    def client_reference(self):
-        return self._client_reference
+@bot.command(name='queryusers', help="Print each voice member for debugging purposes")
+async def queryusers(context):
+    voice_members = await get_voice_members(context.guild)
+    for member in voice_members:
+        print(f"Voice Member: {member}")
 
-    @client_reference.setter
-    def client_reference(self, reference):
-        self._client_reference = reference
 
-    @property
-    def __version__(self):
-        return "Version 1.1.20201109"
+async def get_raid_channel(guild):
+    for voice_channel in guild.voice_channels:
+        if voice_channel.name == "Mythic Raid":
+            return voice_channel
 
-    @property
-    def guild(self):
-        for guild in self.guilds:
-            if guild.name == "Tea Baggers":
-                return guild
 
-    @property
-    def raid_channel(self):
-        for voice_channel in self.guild.voice_channels:
-            if voice_channel.name == "Mythic Raid":
-                return voice_channel
+async def get_raider_roles(guild):
+    raider_roles_names = ["Mythic Raider", "Officer", "Assistant GM", "GM"]
+    return list(filter(lambda role: role.name in raider_roles_names, guild.roles))
 
-    @property
-    def raider_roles(self):
-        return list(filter(lambda role: role.name == "Mythic Raider" or role.name == "Officer" or role.name == "Assistant GM" or role.name == "GM", self.guild.roles))
 
-    async def on_ready(self):
-        print(f'[+] HatchiBot Online {self.__version__}')
+async def get_voice_members(guild):
+    return list(filter(lambda member: member.voice and member.voice.channel and not member.voice.afk, guild.members))
 
-    async def on_message(self, message):
-        if message.author != self.client_reference.user:
-            if message.content.startswith("!raidtime"):
-                print("[+] !raidtime Message Received")
-                await self.raid_time()
-            if message.content.startswith("!querymembers"):
-                print("[+] !querymembers Message Received")
-                await self.query_members()
 
-    async def voice_members(self):
-        return list(filter(lambda member: member.voice and member.voice.channel and not member.voice.afk, self.guild.members))
+async def check_member_roles(member, raider_roles):
+    for role in member.roles:
+        if role in raider_roles:
+            yield True
 
-    async def raid_time(self):
-        for member in await self.voice_members():
-            if self.check_member_roles(member):
-                await self.move_raider(member)
 
-    async def check_member_roles(self, member):
-        for role in member.roles:
-            if role in self.raider_roles:
-                yield True
-
-    async def move_raider(self, member):
+async def move_raider(member, raid_channel):
+    if member.voice.channel.name != raid_channel.name:
         print(f"[+] Moving Raider: {member}")
-        await member.move_to(self.raid_channel)
-
-    async def query_members(self):
-        for member in await self.voice_members():
-            print(f"[+] Member: {member}")
+        await member.move_to(raid_channel)
 
 
 def load_config():
@@ -75,6 +58,4 @@ def load_config():
 
 if __name__ == '__main__':
     config = load_config()
-    client = HatchiBot()
-    client.client_reference = client
-    client.run(config['token'])
+    bot.run(config['token'])
