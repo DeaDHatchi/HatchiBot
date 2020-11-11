@@ -1,5 +1,6 @@
 import json
 import asyncio
+import discord
 from discord.ext import commands
 
 bot = commands.Bot(command_prefix="!")
@@ -42,6 +43,12 @@ async def development(context):
                        "`Dueling Game: Developed by Hatchi, Gal, Goth`\n"
                        "`Reaction Based Role Assignment: Assign Roles, Classes based on Reactions`\n"
                        "`Event Planner: Basic Event Planner based on Reactions`")
+
+
+@bot.command(name='mage', help='For when Laz, Blind, or Gal make fun of me because they are mean')
+async def mage(context):
+    file = discord.File(r"images\class_peasantry.jpg")
+    await context.send(file=file, content="The level of peasantry around here is too high")
 
 
 async def get_raid_channel(guild):
