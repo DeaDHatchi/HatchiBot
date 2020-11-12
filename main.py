@@ -15,6 +15,13 @@ async def on_reaction_add(reaction, user):
             await assign_role(reaction, user)
 
 
+@bot.event
+async def on_reaction_remove(reaction, user):
+    if user.name != "HatchiBot":
+        if await check_message_ids(reaction.message):
+            await remove_role(reaction, user)
+
+
 @bot.command(name="raidtime", help="Move all Mythic Raiders to the Mythic Raid Channel. Officers Only")
 @commands.has_role("Officer")
 async def raidtime(context):
@@ -67,26 +74,23 @@ async def roleassignment(context):
     await save_message_id(response)
 
 
+@bot.command(name='internethistory', help="Because Teenytiny")
+async def internethistory(context):
+    await context.send(r"`Internet History is Secured, but HatchiBot has recently searched for Belle Delphine`")
+
+
 async def assign_role(reaction, member):
-    # TODO: This can be cleaned up, but we are testing functionality
-    emoji_id_to_role = {760914412969918474: "Death Knight",
-                        760930684029370458: "Demon Hunter",
-                        760930699632050227: "Druid",
-                        760930714698383412: "Hunter",
-                        760930733605912636: "Mage",
-                        760930748135374890: "Monk",
-                        760930763171430421: "Paladin",
-                        760930778158333972: "Priest",
-                        760930791482982410: "Rogue",
-                        760930806377480193: "Shaman",
-                        760930820264951819: "Warlock",
-                        760930837448360006: "Warrior",
-                        760959782265421836: "Tank",
-                        760959799336108112: "Healer",
-                        760959818705403984: "DPS"}
+    emoji_id_to_role = load_emoji_id_to_role()
     role = discord.utils.get(member.guild.roles, name=emoji_id_to_role[reaction.emoji.id])
     if role not in member.roles:
         await member.add_roles(role)
+
+
+async def remove_role(reaction, member):
+    emoji_id_to_role = load_emoji_id_to_role()
+    role = discord.utils.get(member.guild.roles, name=emoji_id_to_role[reaction.emoji.id])
+    if role in member.roles:
+        await member.remove_roles(role)
 
 
 async def roles_by_id(roles):
@@ -158,6 +162,15 @@ def load_emojis():
 def load_saved_message_ids():
     with open(r'docs/message_ids', 'r') as message_file:
         return list([x.strip('\n') for x in message_file.readlines()])
+
+
+def load_emoji_id_to_role():
+    with open(r'docs/emoji_id_to_role', 'r') as emoji_file:
+        new = {}
+        load = json.loads(emoji_file.read())
+        for key, value in load.items():
+            new[int(key)] = value
+        return new
 
 
 if __name__ == '__main__':
