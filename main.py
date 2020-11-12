@@ -48,7 +48,6 @@ async def github(context):
 async def development(context):
     await context.send("__**Currently Under Development Features**__\n"
                        "`Dueling Game: Developed by Hatchi, Gal, Goth`\n"
-                       "`Reaction Based Role Assignment: Assign Roles, Classes based on Reactions`\n"
                        "`Event Planner: Basic Event Planner based on Reactions`")
 
 
