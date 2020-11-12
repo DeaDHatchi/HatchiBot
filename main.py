@@ -8,7 +8,14 @@ bot = commands.Bot(command_prefix="!")
 __version__ = "1.2.20201111"
 
 
-@bot.command(name="raidtime", help="Move all Mythic Raiders to the Mythic Raid Channel")
+@bot.event
+async def on_reaction_add(reaction, user):
+    if user.name != "HatchiBot":
+        if await check_message_ids(reaction.message):
+            await assign_role(reaction, user)
+
+
+@bot.command(name="raidtime", help="Move all Mythic Raiders to the Mythic Raid Channel. Officers Only")
 @commands.has_role("Officer")
 async def raidtime(context):
     raid_channel = await get_raid_channel(context.guild)
@@ -18,13 +25,6 @@ async def raidtime(context):
         if check_member_roles(member, raider_roles):
             await move_raider(member, raid_channel)
             await asyncio.sleep(.25)  # Using this to test issues with moving members too quickly
-
-
-@bot.command(name='queryusers', help="Print each voice member for debugging purposes")
-async def queryusers(context):
-    voice_members = await get_voice_members(context.guild)
-    for member in voice_members:
-        print(f"Voice Member: {member}")
 
 
 @bot.command(name='version', help="Print the latest version of HatchiBot")
@@ -55,8 +55,63 @@ async def mage(context):
 async def event(context):
     response = await context.send("__**Event Testing**__\n"
                                   "Testing Reactions")
+    await add_emojis(response)
+
+
+@bot.command(name="roleassignment", help="Used to create Role Assignment Message. Officers Only")
+@commands.has_role("Officer")
+async def roleassignment(context):
+    response = await context.send("__**Role Assignment Message**__\n"
+                                  r"React to the Emoji's on this message to add your role assignments")
+    await add_emojis(response)
+    await save_message_id(response)
+
+
+async def assign_role(reaction, member):
+    # TODO: This can be cleaned up, but we are testing functionality
+    emoji_id_to_role = {760914412969918474: "Death Knight",
+                        760930684029370458: "Demon Hunter",
+                        760930699632050227: "Druid",
+                        760930714698383412: "Hunter",
+                        760930733605912636: "Mage",
+                        760930748135374890: "Monk",
+                        760930763171430421: "Paladin",
+                        760930778158333972: "Priest",
+                        760930791482982410: "Rogue",
+                        760930806377480193: "Shaman",
+                        760930820264951819: "Warlock",
+                        760930837448360006: "Warrior",
+                        760959782265421836: "Tank",
+                        760959799336108112: "Healer",
+                        760959818705403984: "DPS"}
+    role = discord.utils.get(member.guild.roles, name=emoji_id_to_role[reaction.emoji.id])
+    if role not in member.roles:
+        await member.add_roles(role)
+
+
+async def roles_by_id(roles):
+    x = {}
+    for role in roles:
+        x[role.id] = role
+    return x
+
+
+async def add_emojis(message):
     for emoji in emojis:
-        await add_reaction(response, emoji)
+        await add_reaction(message, emoji)
+
+
+async def save_message_id(message):
+    message_ids.append(message.id)
+    with open('docs/message_ids', 'a') as message_file:
+        message_file.write(f'{message.id}\n')
+
+
+async def check_message_ids(message):
+    if message.id in message_ids:
+        return True
+    else:
+        return False
 
 
 async def get_raid_channel(guild):
@@ -100,7 +155,13 @@ def load_emojis():
         return list([x.strip('\n') for x in emojis_file.readlines()])
 
 
+def load_saved_message_ids():
+    with open(r'docs/message_ids', 'r') as message_file:
+        return list([x.strip('\n') for x in message_file.readlines()])
+
+
 if __name__ == '__main__':
     emojis = load_emojis()
     config = load_config()
+    message_ids = load_saved_message_ids()
     bot.run(config['token'])
