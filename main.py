@@ -94,10 +94,7 @@ async def remove_role(reaction, member):
 
 
 async def roles_by_id(roles):
-    x = {}
-    for role in roles:
-        x[role.id] = role
-    return x
+    return {role.id: role for role in roles}
 
 
 async def add_emojis(message):
@@ -166,11 +163,7 @@ def load_saved_message_ids():
 
 def load_emoji_id_to_role():
     with open(r'docs/emoji_id_to_role', 'r') as emoji_file:
-        new = {}
-        load = json.loads(emoji_file.read())
-        for key, value in load.items():
-            new[int(key)] = value
-        return new
+        return {int(key): value for key, value in json.loads(emoji_file.read()).items()}
 
 
 if __name__ == '__main__':
