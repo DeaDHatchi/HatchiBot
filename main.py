@@ -51,6 +51,14 @@ async def mage(context):
     await context.send(file=file, content="The level of peasantry around here is too high")
 
 
+@bot.command(name="event", help="Used for Event Testing")
+async def event(context):
+    response = await context.send("__**Event Testing**__\n"
+                                  "Testing Reactions")
+    for emoji in emojis:
+        await add_reaction(response, emoji)
+
+
 async def get_raid_channel(guild):
     for voice_channel in guild.voice_channels:
         if voice_channel.name == "Mythic Raid":
@@ -78,11 +86,21 @@ async def move_raider(member, raid_channel):
         await member.move_to(raid_channel)
 
 
+async def add_reaction(message, reaction):
+    await message.add_reaction(reaction)
+
+
 def load_config():
     with open('config', 'r') as config_file:
         return json.loads(config_file.read())
 
 
+def load_emojis():
+    with open(r'docs/emojis', 'r') as emojis_file:
+        return list([x.strip('\n') for x in emojis_file.readlines()])
+
+
 if __name__ == '__main__':
+    emojis = load_emojis()
     config = load_config()
     bot.run(config['token'])
