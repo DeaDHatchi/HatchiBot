@@ -5,13 +5,14 @@ from discord.ext import commands
 
 bot = commands.Bot(command_prefix="!")
 
-__version__ = "1.2.20201111"
+__version__ = "1.2.20201112"
 
 
 @bot.event
 async def on_reaction_add(reaction, user):
     if user.name != "HatchiBot":
         if await check_message_ids(reaction.message):
+            print(f"[+] {user.name} has added {reaction.emoji.name}")
             await assign_role(reaction, user)
 
 
@@ -19,6 +20,7 @@ async def on_reaction_add(reaction, user):
 async def on_reaction_remove(reaction, user):
     if user.name != "HatchiBot":
         if await check_message_ids(reaction.message):
+            print(f"[-] {user.name} has removed {reaction.emoji.name}")
             await remove_role(reaction, user)
 
 
@@ -48,7 +50,7 @@ async def github(context):
 async def development(context):
     await context.send("__**Currently Under Development Features**__\n"
                        "`Dueling Game: Developed by Hatchi, Gal, Goth`\n"
-                       "`Event Planner: Basic Event Planner based on Reactions`")
+                       "`Event/Raid Planner: Basic Event/Raid Planner based on Reactions`")
 
 
 @bot.command(name='mage', help='For when Laz, Blind, or Gal make fun of me because they are mean')
@@ -64,11 +66,12 @@ async def event(context):
     await add_emojis(response)
 
 
-@bot.command(name="roleassignment", help="Used to create Role Assignment Message. Officers Only")
+@bot.command(name="roleassignment", help="Used to create Class & Role Assignment. Officers Only")
 @commands.has_role("Officer")
 async def roleassignment(context):
-    response = await context.send("__**Role Assignment Message**__\n"
-                                  r"React to the Emoji's on this message to add your role assignments")
+    response = await context.send("__**Class & Role Reaction Assignment**__\n\n"
+                                  "React to the Emoji's on this message to add your class and your role assignments. You can add multiple classes, and multiple roles.\n"
+                                  "If you accidently add a role you want to remove. You can simply click on the reaction again to unselect it and that will remove the class or role.")
     await add_emojis(response)
     await save_message_id(response)
 
