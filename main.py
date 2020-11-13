@@ -111,6 +111,12 @@ async def mage(context):
     await context.send(file=file, content="The level of peasantry around here is too high")
 
 
+@bot.command(name='fridaythe13th', help='Mandrah helped me craft this gem')
+async def fridaythe13th(context):
+    file = discord.File(r"images\pika.png")
+    await context.send(file=file, content="`Not even death can save you from me.. Pika Pi`")
+
+
 @bot.command(name='priest', help="Because Gal")
 async def priest(context):
     await context.send("`The class that wishes they were mages. Why meeeee`")
