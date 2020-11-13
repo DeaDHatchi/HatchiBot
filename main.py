@@ -65,6 +65,30 @@ async def raidevent(context):
     pass
 
 
+@bot.commands(name="raidevent", help="Example: !raidevent -n Mythic Nathria -d 01/06/2021 -t 10:30PM CST")
+@commands.has_role("Officer")
+async def raidevent(context):
+    """
+    Basic idea here is to create new message, or load a previous message that is a scheduled raid.
+    Allow players to sign up for the raid with reactions to the message.
+    Modify the message text with Mentions and Emojis for raid signup, as well as modify role count
+
+    Only allow raiders to sign up for 1 role
+    have switches in the message for Name, Date, Time
+
+    -n or -name : "Name"
+    -d or -date : "Date"
+    -t or -time : "Time"
+    example: !raidevent -n Mythic Nathria -d 01/06/2021 -t 10:30PM CST
+
+    In theory we should also be able to send direct messages to users who have signed up as a reminder before raid
+
+    :param context:
+    :return:
+    """
+    pass
+
+
 @bot.command(name='version', help="Print the latest version of HatchiBot")
 async def version(context):
     await context.send("__**HatchiBot Online**__\n"
