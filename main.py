@@ -36,9 +36,34 @@ async def raidtime(context):
             await asyncio.sleep(.25)  # Using this to test issues with moving members too quickly
 
 
+@bot.commands(name="raidevent", help="Example: !raidevent -n Mythic Nathria -d 01/06/2021 -t 10:30PM CST")
+@commands.has_role("Officer")
+async def raidevent(context):
+    """
+    Basic idea here is to create new message, or load a previous message that is a scheduled raid.
+    Allow players to sign up for the raid with reactions to the message.
+    Modify the message text with Mentions and Emojis for raid signup, as well as modify role count
+
+    Only allow raiders to sign up for 1 role
+    have switches in the message for Name, Date, Time
+
+    -n or -name : "Name"
+    -d or -date : "Date"
+    -t or -time : "Time"
+    example: !raidevent -n Mythic Nathria -d 01/06/2021 -t 10:30PM CST
+
+    In theory we should also be able to send direct messages to users who have signed up as a reminder before raid
+
+    :param context:
+    :return:
+    """
+    pass
+
+
 @bot.command(name='version', help="Print the latest version of HatchiBot")
 async def version(context):
-    await context.send(f"__**HatchiBot Online**__\n`Version: {__version__}`")
+    await context.send("__**HatchiBot Online**__\n"
+                       f"`Version: {__version__}`")
 
 
 @bot.command(name="github", help="Print the link to HatchiBot's Github")
@@ -48,9 +73,7 @@ async def github(context):
 
 @bot.command(name="development", help="Print the current list of HatchiBot's In-Development Projects")
 async def development(context):
-    await context.send("__**Currently Under Development Features**__\n"
-                       "`Dueling Game: Developed by Hatchi, Gal, Goth`\n"
-                       "`Event/Raid Planner: Basic Event/Raid Planner based on Reactions`")
+    await context.send(load_saved_template(r'docs\development_template'))
 
 
 @bot.command(name='mage', help='For when Laz, Blind, or Gal make fun of me because they are mean')
@@ -69,9 +92,7 @@ async def event(context):
 @bot.command(name="roleassignment", help="Used to create Class & Role Assignment. Officers Only")
 @commands.has_role("Officer")
 async def roleassignment(context):
-    response = await context.send("__**Class & Role Reaction Assignment**__\n\n"
-                                  "React to the Emoji's on this message to add your class and your role assignments. You can add multiple classes, and multiple roles.\n"
-                                  "If you accidently add a role you want to remove. You can simply click on the reaction again to unselect it and that will remove the class or role.")
+    response = await context.send(load_saved_template(r'docs\class_and_role_assignment_template'))
     await add_emojis(response)
     await save_message_id(response)
 
@@ -115,6 +136,13 @@ async def check_message_ids(message):
         return True
     else:
         return False
+
+
+@bot.command(name="eventplanner", help="Will be used for planning events with reaction based signup")
+async def eventplanner(context):
+    response = await context.send("__**EVENT PLANNER TEST**__\n"
+                                  "Testing out Reactions with Event Planning")
+    await add_reaction(response, ':mage_class_icon:')
 
 
 async def get_raid_channel(guild):
@@ -166,6 +194,11 @@ def load_saved_message_ids():
 def load_emoji_id_to_role():
     with open(r'docs/emoji_id_to_role', 'r') as emoji_file:
         return {int(key): value for key, value in json.loads(emoji_file.read()).items()}
+
+
+def load_saved_template(template_path):
+    with open(template_path, 'r') as template_file:
+        return template_file.read()
 
 
 if __name__ == '__main__':
