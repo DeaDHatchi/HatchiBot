@@ -24,6 +24,11 @@ async def on_reaction_remove(reaction, user):
             await remove_role(reaction, user)
 
 
+@bot.command(name="blind", help="Because Blind wanted a Command")
+async def blind(context):
+    await context.send("`Blind volunteered to do every Mechanic in Shadowlands raiding`")
+
+
 @bot.command(name="raidtime", help="Move all Mythic Raiders to the Mythic Raid Channel. Officers Only")
 @commands.has_role("Officer")
 async def raidtime(context):
@@ -33,12 +38,37 @@ async def raidtime(context):
     for member in voice_members:
         if check_member_roles(member, raider_roles):
             await move_raider(member, raid_channel)
-            await asyncio.sleep(.25)  # Using this to test issues with moving members too quickly
+            await asyncio.sleep(.5)  # Using this to test issues with moving members too quickly
+
+
+@bot.command(name="raidevent", help="Example: !raidevent -n Mythic Nathria -d 01/06/2021 -t 10:30PM CST")
+@commands.has_role("Officer")
+async def raidevent(context):
+    """
+    Basic idea here is to create new message, or load a previous message that is a scheduled raid.
+    Allow players to sign up for the raid with reactions to the message.
+    Modify the message text with Mentions and Emojis for raid signup, as well as modify role count
+
+    Only allow raiders to sign up for 1 role
+    have switches in the message for Name, Date, Time
+
+    -n or -name : "Name"
+    -d or -date : "Date"
+    -t or -time : "Time"
+    example: !raidevent -n Mythic Nathria -d 01/06/2021 -t 10:30PM CST
+
+    In theory we should also be able to send direct messages to users who have signed up as a reminder before raid
+
+    :param context:
+    :return:
+    """
+    pass
 
 
 @bot.command(name='version', help="Print the latest version of HatchiBot")
 async def version(context):
-    await context.send(f"__**HatchiBot Online**__\n`Version: {__version__}`")
+    await context.send("__**HatchiBot Online**__\n"
+                       f"`Version: {__version__}`")
 
 
 @bot.command(name="github", help="Print the link to HatchiBot's Github")
@@ -48,15 +78,83 @@ async def github(context):
 
 @bot.command(name="development", help="Print the current list of HatchiBot's In-Development Projects")
 async def development(context):
-    await context.send("__**Currently Under Development Features**__\n"
-                       "`Dueling Game: Developed by Hatchi, Gal, Goth`\n"
-                       "`Event/Raid Planner: Basic Event/Raid Planner based on Reactions`")
+    await context.send(load_saved_template(r'docs\development_template'))
 
 
 @bot.command(name='mage', help='For when Laz, Blind, or Gal make fun of me because they are mean')
 async def mage(context):
     file = discord.File(r"images\class_peasantry.jpg")
     await context.send(file=file, content="The level of peasantry around here is too high")
+
+
+@bot.command(name='priest', help="Because Gal")
+async def priest(context):
+    await context.send("`The class that wishes they were mages. Why meeeee`")
+
+
+@bot.command(name='laz', help="for Laz")
+async def laz(context):
+    await context.send("`Big Tank that enjoys collecting mounts and 20s pull timers`")
+
+
+@bot.command(name="bass", help="for Bass")
+async def bass(context):
+    await context.send("`A better hunter then Blind`")
+
+
+@bot.command(name="daz", help="for Daz")
+async def daz(context):
+    await context.send("`The official guild furry. Ask him about uWu and Yipping`")
+
+
+@bot.command(name="goth", help="for Goth")
+async def goth(context):
+    await context.send("`Hatchi's favorite because he went Mage to join the best class`")
+
+
+@bot.command(name="sin", help="for Sin")
+async def sin(context):
+    await context.send("`Sin go hit your brother`")
+
+
+@bot.command(name="bendali", help="for Bendali")
+async def bendali(context):
+    await context.send("`It is said that you can hear the cries of guildies being removed from miles away`")
+
+
+@bot.command(name="teenytiny", help="For Teenytiny")
+async def teenytiny(context):
+    await context.send("`The First Gentleman of the Guild that enjoys fine whiskey, flying planes, and cheering for the raid`")
+
+
+@bot.command(name="syng", help="for Syng")
+async def syng(context):
+    await context.send("`Our fearless leader, Guild Momma, and #1 target of Shal's heals.`")
+
+
+@bot.command(name="shal", help="for Shal")
+async def shal(context):
+    await context.send("`Syyng!!! Brb need a cookie`")
+
+
+@bot.command(name="cory", help="for Cory")
+async def cory(context):
+    await context.send("`Shhh. Bigfoots lurking around these parts`")
+
+
+@bot.command(name="mandrah", help="for Mandrah")
+async def mandrah(context):
+    await context.send("`The Neko Lord, and hoarder of the Cat Girl Harem`")
+
+
+@bot.command(name="nui", help="for Nui")
+async def nui(context):
+    await context.send("`It's Queen Nui. Respect the title`")
+
+
+@bot.command(name="gal", help="for Gal")
+async def gal(context):
+    await context.send("`Why meeee!`")
 
 
 @bot.command(name="event", help="Used for Event Testing")
@@ -69,9 +167,7 @@ async def event(context):
 @bot.command(name="roleassignment", help="Used to create Class & Role Assignment. Officers Only")
 @commands.has_role("Officer")
 async def roleassignment(context):
-    response = await context.send("__**Class & Role Reaction Assignment**__\n\n"
-                                  "React to the Emoji's on this message to add your class and your role assignments. You can add multiple classes, and multiple roles.\n"
-                                  "If you accidently add a role you want to remove. You can simply click on the reaction again to unselect it and that will remove the class or role.")
+    response = await context.send(load_saved_template(r'docs\class_and_role_assignment_template'))
     await add_emojis(response)
     await save_message_id(response)
 
@@ -115,6 +211,13 @@ async def check_message_ids(message):
         return True
     else:
         return False
+
+
+@bot.command(name="eventplanner", help="Will be used for planning events with reaction based signup")
+async def eventplanner(context):
+    response = await context.send("__**EVENT PLANNER TEST**__\n"
+                                  "Testing out Reactions with Event Planning")
+    await add_reaction(response, ':mage_class_icon:')
 
 
 async def get_raid_channel(guild):
@@ -166,6 +269,11 @@ def load_saved_message_ids():
 def load_emoji_id_to_role():
     with open(r'docs/emoji_id_to_role', 'r') as emoji_file:
         return {int(key): value for key, value in json.loads(emoji_file.read()).items()}
+
+
+def load_saved_template(template_path):
+    with open(template_path, 'r') as template_file:
+        return template_file.read()
 
 
 if __name__ == '__main__':

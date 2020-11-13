@@ -1,0 +1,13 @@
+__**{name}**__
+{name} is scheduled for {time} on {date}.
+In order to signup you need to have the @Mythic Raider role
+To signup for the event please react to this message with your *Class* and *Role*
+
+:tank_role_icon: __**TANKS**__ :tank_role_icon: ({tank_count}/{tank_max})
+{tanks}
+
+:healer_role_icon: __**HEALERS**__ :healer_role_icon: ({healer_count}/{healer_max})
+{healers}
+
+:dps_role_icon: __**DPS**__ :dps_role_icon: ({dps_count}/{dps_max})
+{dps}
