@@ -3,3 +3,5 @@ __**Currently Under Development Features**__
 `Dueling Game: Developed by Hatchi, Gal, Goth`
 `Event/Raid Planner: Basic Event/Raid Planner based on Reactions`
 `On Discord Join Role Messages: When a member joins Discord send them a DM with Emoji Reactions for role assignment`
+`Logging: Need to implement Logging to track down issues more in-depth`
+`Random responses for multiple small commands to add some flavor`

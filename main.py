@@ -41,9 +41,9 @@ async def raidtime(context):
             await asyncio.sleep(.5)  # Using this to test issues with moving members too quickly
 
 
-@bot.command(name="raidevent", help="Example: !raidevent -n Mythic Nathria -d 01/06/2021 -t 10:30PM CST")
+@bot.command(name="raid", help="Example: !raid -n Mythic Nathria -d 01/06/2021 -t 10:30PM CST")
 @commands.has_role("Officer")
-async def raidevent(context):
+async def raid(context):
     """
     Basic idea here is to create new message, or load a previous message that is a scheduled raid.
     Allow players to sign up for the raid with reactions to the message.
@@ -62,37 +62,45 @@ async def raidevent(context):
     :param context:
     :return:
     """
-    pass
+    # TODO: Parse the switches from Text
+    # These are going to be placeholders for testing until we solve Switches
+    name = "Testing Raid Name"
+    time = "10:30PM CST"
+    date = "01/06/2020"
+    tank_count = 0
+    tank_max = 2
+    healer_count = 0
+    healer_max = 4
+    dps_count = 0
+    dps_max = 14
+    tank_icon = await get_emoji_by_name(context, 'tank_role_icon')
+    healer_icon = await get_emoji_by_name(context, 'healer_role_icon')
+    dps_icon = await get_emoji_by_name(context, 'dps_role_icon')
+    # TODO: Create Raid Signup Message
+    raid_message = load_saved_template(r'docs/raid_signup_template')  # Loading the signup message
+    formatted_message = raid_message.format(name=name, time=time, date=date, tank_count=tank_count, tank_max=tank_max,
+                                            healer_count=healer_count, healer_max=healer_max, dps_count=dps_count,
+                                            dps_max=dps_max, tanks="", healers="", dps="", tank_icon=tank_icon,
+                                            healer_icon=healer_icon, dps_icon=dps_icon,
+                                            mythic_raider_role="`Role Placeholder`")
 
-
-@bot.commands(name="raidevent", help="Example: !raidevent -n Mythic Nathria -d 01/06/2021 -t 10:30PM CST")
-@commands.has_role("Officer")
-async def raidevent(context):
-    """
-    Basic idea here is to create new message, or load a previous message that is a scheduled raid.
-    Allow players to sign up for the raid with reactions to the message.
-    Modify the message text with Mentions and Emojis for raid signup, as well as modify role count
-
-    Only allow raiders to sign up for 1 role
-    have switches in the message for Name, Date, Time
-
-    -n or -name : "Name"
-    -d or -date : "Date"
-    -t or -time : "Time"
-    example: !raidevent -n Mythic Nathria -d 01/06/2021 -t 10:30PM CST
-
-    In theory we should also be able to send direct messages to users who have signed up as a reminder before raid
-
-    :param context:
-    :return:
-    """
-    pass
+    response = await context.send(formatted_message)
+    # TODO: Add Reactions to Raid Signup
+    await add_emojis(response)
+    # TODO: Modify Main Message based on Reactions
+    # TODO: Save message for reload if needed
 
 
 @bot.command(name='version', help="Print the latest version of HatchiBot")
 async def version(context):
     await context.send("__**HatchiBot Online**__\n"
                        f"`Version: {__version__}`")
+
+
+@bot.command(name="weebs", help="Hatchi speaks for the Weebs")
+async def weebs(context):
+    await context.send("`Mister! He shouted with an Arcane Caprice`\n"
+                       "`My Name is Hatchi, and I speak for the Weebs.`")
 
 
 @bot.command(name="github", help="Print the link to HatchiBot's Github")
@@ -187,6 +195,12 @@ async def gal(context):
     await context.send("`Why meeee!`")
 
 
+@bot.command(name='sparkles', help="Example: !sparkles @Hatchi")
+async def sparkles(context):
+    for member in context.message.mentions:
+        await context.send(f"`Good Job! (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧` {member.mention}")
+
+
 @bot.command(name="event", help="Used for Event Testing")
 async def event(context):
     response = await context.send("__**Event Testing**__\n"
@@ -204,6 +218,7 @@ async def roleassignment(context):
 
 @bot.command(name='internethistory', help="Because Teenytiny")
 async def internethistory(context):
+    # TODO: Add randomness to "search"
     await context.send(r"`Internet History is Secured, but HatchiBot has recently searched for Belle Delphine`")
 
 
@@ -279,6 +294,10 @@ async def move_raider(member, raid_channel):
 
 async def add_reaction(message, reaction):
     await message.add_reaction(reaction)
+
+
+async def get_emoji_by_name(context, name):
+    return discord.utils.get(context.guild.emojis, name=name)
 
 
 def load_config():
