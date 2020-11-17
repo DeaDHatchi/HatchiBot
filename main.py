@@ -1,6 +1,7 @@
 import json
 import asyncio
 import discord
+import random
 from discord.ext import commands
 
 bot = commands.Bot(command_prefix="!")
@@ -97,6 +98,11 @@ async def version(context):
                        f"`Version: {__version__}`")
 
 
+@bot.command(name='belledelphine', help="Post a random Belle Delphine Gif")
+async def belledelphine(context):
+    await context.send(random.choice(load_belle_delphine_links()))
+
+
 @bot.command(name="weebs", help="Hatchi speaks for the Weebs")
 async def weebs(context):
     await context.send("`Mister! He shouted with an Arcane Caprice`\n"
@@ -142,7 +148,7 @@ async def bass(context):
 
 @bot.command(name="daz", help="for Daz")
 async def daz(context):
-    await context.send("`The official guild furry. Ask him about uWu and Yipping`")
+    await context.send("`The official guild furry. Ask him about UWU and Yiffing`")
 
 
 @bot.command(name="goth", help="for Goth")
@@ -308,6 +314,11 @@ def load_config():
 def load_emojis():
     with open(r'docs/emojis', 'r') as emojis_file:
         return list([x.strip('\n') for x in emojis_file.readlines()])
+
+
+def load_belle_delphine_links():
+    with open(r'docs/belle_delphine_links', 'r') as belle_file:
+        return list([x.strip('\n') for x in belle_file.readlines()])
 
 
 def load_saved_message_ids():
