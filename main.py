@@ -6,7 +6,7 @@ from discord.ext import commands
 
 bot = commands.Bot(command_prefix="!")
 
-__version__ = "1.2.20201112"
+__version__ = "1.3.20201119"
 
 
 @bot.event
@@ -30,6 +30,12 @@ async def blind(context):
     await context.send("`Blind volunteered to do every Mechanic in Shadowlands raiding`")
 
 
+@bot.command(name="hatchi", help="Back due to high demand")
+async def blind(context):
+    await context.send("`Fearless Raid Leader and Master to Hatchibot. "
+                       "Doesn't understand Gen Z slang, and ask him to pronounce names`")
+
+
 @bot.command(name="raidtime", help="Move all Mythic Raiders to the Mythic Raid Channel. Officers Only")
 @commands.has_role("Officer")
 async def raidtime(context):
@@ -39,7 +45,7 @@ async def raidtime(context):
     for member in voice_members:
         if check_member_roles(member, raider_roles):
             await move_raider(member, raid_channel)
-            await asyncio.sleep(.5)  # Using this to test issues with moving members too quickly
+            await asyncio.sleep(1)  # Using this to test issues with moving members too quickly
 
 
 @bot.command(name="raid", help="Example: !raid -n Mythic Nathria -d 01/06/2021 -t 10:30PM CST")
@@ -100,7 +106,13 @@ async def version(context):
 
 @bot.command(name='belledelphine', help="Post a random Belle Delphine Gif")
 async def belledelphine(context):
-    await context.send(random.choice(load_belle_delphine_links()))
+    if await is_nsfw_channel(context):
+        await context.send(random.choice(load_belle_delphine_links()))
+
+
+@bot.command(name='laurabailey', help="Post a random Laura Bailey Gif")
+async def laurabailey(context):
+    await context.send(random.choice(load_laura_bailey_links()))
 
 
 @bot.command(name="weebs", help="Hatchi speaks for the Weebs")
@@ -264,6 +276,13 @@ async def check_message_ids(message):
         return False
 
 
+async def is_nsfw_channel(context):
+    if context.message.channel == discord.utils.get(context.guild.channels, name="nsfw-shinanigans"):
+        return True
+    else:
+        return False
+
+
 @bot.command(name="eventplanner", help="Will be used for planning events with reaction based signup")
 async def eventplanner(context):
     response = await context.send("__**EVENT PLANNER TEST**__\n"
@@ -314,6 +333,11 @@ def load_config():
 def load_emojis():
     with open(r'docs/emojis', 'r') as emojis_file:
         return list([x.strip('\n') for x in emojis_file.readlines()])
+
+
+def load_laura_bailey_links():
+    with open(r'docs/laura_bailey_links', 'r') as bailey_file:
+        return list([x.strip('\n') for x in bailey_file.readlines()])
 
 
 def load_belle_delphine_links():
