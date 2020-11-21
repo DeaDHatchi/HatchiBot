@@ -6,7 +6,7 @@ from discord.ext import commands
 
 bot = commands.Bot(command_prefix="!")
 
-__version__ = "1.3.20201119"
+__version__ = "1.4.20201120"
 
 
 @bot.event
@@ -31,12 +31,12 @@ async def blind(context):
 
 
 @bot.command(name="hatchi", help="Back due to high demand")
-async def blind(context):
+async def hatchi(context):
     await context.send("`Fearless Raid Leader and Master to Hatchibot. "
                        "Doesn't understand Gen Z slang, and ask him to pronounce names`")
 
 
-@bot.command(name="raidtime", help="Move all Mythic Raiders to the Mythic Raid Channel. Officers Only")
+@bot.command(name="raidtime", help="Move all members with Mythic Raider role to the Mythic Raid Channel. Officers Only")
 @commands.has_role("Officer")
 async def raidtime(context):
     raid_channel = await get_raid_channel(context.guild)
@@ -364,4 +364,5 @@ if __name__ == '__main__':
     emojis = load_emojis()
     config = load_config()
     message_ids = load_saved_message_ids()
+    bot.load_extension("cogs.CustomMessageCog")
     bot.run(config['token'])
